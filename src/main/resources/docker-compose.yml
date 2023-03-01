@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak:12.0.4
+    restart: always
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/realm.json
+      KEYCLOAK_IMPORT_FILE: /tmp/realm.json
+      KEYCLOAK_LOGLEVEL: DEBUG
+      KEYCLOAK_FRONTEND_URL: http://localhost:8180/auth
+      KEYCLOAK_DEFAULT_REALM: central-realm
+      KEYCLOAK_DEFAULT_CLIENT: products-app
+      KEYCLOAK_DEFAULT_CLIENT_SECRET: 0a156542-374f-4511-88bf-626248b75649
+      KEYCLOAK_DEFAULT_CLIENT_PUBLIC: "true"
+      KEYCLOAK_DEFAULT_CLIENT_BEARER_ONLY: "true"
+      KEYCLOAK_DEFAULT_CLIENT_USE_RESOURCE_ROLE_MAPPINGS: "true"
+      KEYCLOAK_DEFAULT_CLIENT_SSL_REQUIRED: "external"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./import-this-realm.json:/tmp/realm.json
+
+  keycloak_db:
+    container_name: keycloak_db
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - keycloak_db_vol:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE: central_achat
+
+volumes:
+  keycloak_db_vol:
